@@ -1,103 +1,146 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [memData, setMemData] = useState<number[]>([]);
+  const [level, setLevel] = useState(0);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [boxActive, setBoxActive] = useState<boolean[]>([]);
+
+  // Generate path up to 25 levels deep, 
+  // #45B1FF
+  
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+  useEffect(() => {
+    console.log("first pass")
+    let boxBuffer = [];
+    for (let i = 0; i < 9; i++) {
+      boxBuffer.push(false);
+    } 
+
+    setBoxActive(boxBuffer);
+
+    let levelBuffer = [];
+    for (let i = 0; i < 25; i++) {
+      levelBuffer.push(Math.floor(Math.random() * 9))
+    }
+    setMemData(levelBuffer);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      console.log("async")
+      for (let i = 0; i < memData.length; i++) {
+        console.log("1");
+        await sleep(500);
+        console.log("2");
+        await sleep(500);
+      }
+    })() 
+  }, [memData, boxActive]);
+
+  const toggleBox = (index: number, state: boolean) => {
+    console.log(`toggle ${index}`);
+    
+
+    const buffer = [...boxActive];
+    
+    if (buffer[index] != state) {
+      if (state)  {
+        let nBuffer = new Array<boolean>(9);
+        nBuffer.fill(false, 0, 9);
+        nBuffer[index] = true;
+        setBoxActive(nBuffer);
+        return ;
+      }
+
+
+      buffer[index] = state;
+      setBoxActive(buffer);
+    }
+    
+  };
+
+  
+  const square = (sq: number) => {
+
+  }
+
+  // Display the current box depth
+  const displayLevel = async () => {
+
+  }
+
+  const levelPassed = () => {
+
+  }
+
+  return (<div className="w-full h-screen">
+
+    <div className="
+      bg-[#2b87d1]
+      w-full
+      h-1/2
+      flex
+      flex-col
+
+      items-center
+      align-middle
+      justify-center
+    ">
+      <div className="flex justify-between align-middle items-center mb-4">
+        <h1 className="opacity-50 text-white text-3xl">Level: </h1>
+        <span className="ml-2 text-3xl text-white">{level}</span>
+      </div>
+      
+      <div className="flex justify-between">
+        <div className="flex flex-col justify-between w-35 h-102">
+          <div className={`box ${boxActive[1] ? "active": ""}`} onMouseDown={()=>toggleBox(1, true)} onMouseUp={()=>toggleBox(1, false)}></div>
+          <div className={`box ${boxActive[2] ? "active": ""}`} onMouseDown={()=>toggleBox(2, true)} onMouseUp={()=>toggleBox(2, false)}></div>
+          <div className={`box ${boxActive[3] ? "active": ""}`} onMouseDown={()=>toggleBox(3, true)} onMouseUp={()=>toggleBox(3, false)}></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="flex flex-col justify-between w-35 h-102">
+          <div className={`box ${boxActive[4] ? "active": ""}`} onMouseDown={()=>toggleBox(4, true)} onMouseUp={()=>toggleBox(4, false)}></div>
+          <div className={`box ${boxActive[5] ? "active": ""}`} onMouseDown={()=>toggleBox(5, true)} onMouseUp={()=>toggleBox(5, false)}></div>
+          <div className={`box ${boxActive[6] ? "active": ""}`} onMouseDown={()=>toggleBox(6, true)} onMouseUp={()=>toggleBox(6, false)}></div>
+        </div>
+        <div className="flex flex-col justify-between h-102">
+          <div className={`box ${boxActive[7] ? "active": ""}`} onMouseDown={()=>toggleBox(7, true)} onMouseUp={()=>toggleBox(7, false)}></div>
+          <div className={`box ${boxActive[8] ? "active": ""}`} onMouseDown={()=>toggleBox(8, true)} onMouseUp={()=>toggleBox(8, false)}></div>
+          <div className={`box ${boxActive[9] ? "active": ""}`} onMouseDown={()=>toggleBox(9, true)} onMouseUp={()=>toggleBox(9, false)}></div>
+        </div>
+      </div>
     </div>
-  );
+
+
+    <div>
+
+      <div>
+        <h1>Statistics</h1>
+        
+        <div>
+
+        </div>
+      </div>
+
+      <div>
+        <h1> About the test </h1>
+        <p>
+          Memorize the sequence of buttons that light up,
+          then press them in order.
+        </p>
+
+        <p>
+          Every time you finish the pattern, it gets longer.
+        </p>
+
+        <p>
+          Make a mistake, and the test is over.
+        </p>        
+      </div>
+    </div>
+  </div>)
 }
