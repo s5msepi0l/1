@@ -42,3 +42,41 @@ transition: transform 0.05s ease-out, opacity 0.05s ease-out, background 0.05s e
   background-color: white !important;
   transform: scale(1.0);
 }
+
+/* Default background color for your top section */
+.bg-game {
+  background-color: #2b87d1;
+  transition: background-color 0.25s ease;
+}
+
+@keyframes flash-white {
+  0% {
+    background-color: #2b87d1;
+  }
+  50% {
+    background-color: #7eb1da;
+  }
+  100% {
+    background-color: #2b87d1;
+  }
+}
+
+.flash-white {
+  animation: flash-white 0.6s ease;
+}
+
+@keyframes flash-red {
+  0% {
+    background-color: #2b87d1;
+  }
+  50% {
+    background-color: #ff4d4d;
+  }
+  100% {
+    background-color: #2b87d1;
+  }
+}
+
+.flash-red {
+  animation: flash-red 0.6s ease;
+}

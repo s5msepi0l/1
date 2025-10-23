@@ -18,3 +18,8 @@ model test {
   id    Int    @id @default(autoincrement())
   name  String
 }
+
+model memoryData {
+  id    Int    @id @default(autoincrement())
+  score Int
+}
