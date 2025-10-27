@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Chart from "./components/chart";
 
+import PointStyleChart from "./components/chart";
 
 export default function Home() {
   const [memData, setMemData] = useState<number[]>([]);
@@ -45,12 +45,13 @@ export default function Home() {
     let p = progress;
 
     if (index === memData[progress]) {
-      console.log("Progressing...", level, " | ", progress);
       setProgress(progress + 1);
       p++;
     } else { // wrong square combo
       setLevelStyle("flash-red");
       setTimeout(() => setLevelStyle(""), 600);
+
+      sendResults(level);
 
       resetLevelData();
 
@@ -59,7 +60,6 @@ export default function Home() {
     }
 
     if (p === level) { // level passed
-      console.log("Level passed", level, " | ", progress);
       setLevelStyle("flash-white");
       setTimeout(() => setLevelStyle(""), 600);
       setLevel(level + 1);
@@ -68,7 +68,19 @@ export default function Home() {
   }
 
   const sendResults = async(result: number) => {
+    console.log(`LOST, score: ${level-1}`)
 
+    const res = await fetch("/api/score", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ score: result }),
+    });
+
+    if (!res.ok) console.log("Request failed");
+
+    console.log("fetched data: ", res);
   }
 
   const toggleBox = (index: number, state: boolean) => {
@@ -151,23 +163,23 @@ export default function Home() {
     <div className="flex items-center justify-center h-1/2">
 
       <div className="bg-white shadow-md w-1/4 h-4/5 mr-6">
-        <h1 className="text-4xl p-4">Statistics</h1>
+        <h1 className="text-4xl p-4 text-gray-700">Statistics</h1>
 
-        <Chart data={userData}></Chart>
+        <PointStyleChart />
       </div>
 
       <div className="bg-white shadow-md w-1/4 h-4/5">
-        <h1> About the test </h1>
-        <p>
+        <h1 className="text-4xl p-4 text-gray-700"> About the test </h1>
+        <p className="text-lg pl-4 text-gray-700">
           Memorize the sequence of buttons that light up,
           then press them in order.
         </p>
 
-        <p>
+        <p className="text-lg pb-2 p-4 text-gray-700">
           Every time you finish the pattern, it gets longer.
         </p>
 
-        <p>
+        <p className="text-lg p-4 text-gray-700">
           Make a mistake, and the test is over.
         </p>        
       </div>

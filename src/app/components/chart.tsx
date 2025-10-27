@@ -1,47 +1,119 @@
-import { useEffect, useRef } from "react";
+"use client";
 
-interface props {
-    data: Array<number>;
-}
+import React, { useRef, useEffect, useState } from "react";
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 
-export default function Chart(data: props) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    
-    const drawRefrence = (ctx: CanvasRenderingContext2D) => {
-        ctx.beginPath();
-        
-        for (let i = 0; i < 30; i++) {
-            
-        ctx.moveTo(12 + (i * 14), 300)
-        ctx.lineTo(12 + (i * 14), 0);
-        }
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
 
-        ctx.strokeStyle = "#AAAAAA";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    }
+export default function PointStyleChart() {
+    const chartRef = useRef<any>(null);
 
-    const drawChart = (data: Array<number>) =>  {
-        const dataMin = Math.min(...data);
-        const dataMax = Math.max(...data);
-    }
+    const [chartData, setChartData] = useState<number[]>([]);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+            (async() => {
+              const response = await fetch("/api/score", {method: "GET"});
+              const data = await response.json();
+              
+              console.log("data: ", data);
+              setChartData(data);
+            })();
+        },
+        []
+    )
 
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+    const labels = chartData.map((_, i) => i);
 
-        drawRefrence(ctx);
-        drawChart(data.data);
-    }, [data]);
+    const data = {
+        labels,
+        datasets: [
+        {
+            data: chartData,
+            borderColor: "rgb(255, 99, 132)",
+            backgroundColor: "rgba(255, 99, 132, 0.5)",
+            pointStyle: "circle",
+            pointRadius: 5,
+            pointHoverRadius: 10,
+        },
+      ],
+    };
+
+        
+    const config = {
+        type: "line" as const,
+        data,
+        options: {
+            responsive: true,
+            plugins: {
+            title: { display: false },
+            legend: { display: false },
+            },
+            scales: {
+            y: {
+                display: false, // ✅ hides Y-axis (ticks + line)
+                grid: {
+                display: false, // ✅ hides grid lines
+                drawBorder: false,
+                },
+            },
+            x: {
+                grid: {
+                display: false, // optional: hide vertical grid lines too
+                drawBorder: false,
+                },
+            },
+            },
+        },  
+    };  
+
+
+    const pointStyles = [
+        "circle",
+        "cross",
+        "crossRot",
+        "dash",
+        "line",
+        "rect",
+        "rectRounded",
+        "rectRot",
+        "star",
+        "triangle",
+        "false",
+    ];
+
+    const handleAction = (style: string | boolean) => {
+      const chart = chartRef.current;
+      if (!chart) return;
+      chart.data.datasets.forEach((dataset: any) => {
+        dataset.pointStyle = style === "false" ? false : style;
+      });
+      chart.update();
+    };
 
     return (
-    <canvas
-        ref={canvasRef}
-        height={330}
-        width={415}
-        className="ml-6 mt-4"
-    ></canvas>);
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-full max-w-3xl">
+          <Line ref={chartRef} {...config} />
+        </div>
+        <div className="flex flex-wrap justify-center gap-2">
+          {pointStyles.map((style) => (
+            <button
+              key={style}
+              onClick={() => handleAction(style === "false" ? false : style)}
+            >
+            </button>
+          ))}
+        </div>
+      </div>
+    );
 }
